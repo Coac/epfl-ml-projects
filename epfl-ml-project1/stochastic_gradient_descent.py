@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Stochastic Gradient Descent"""
 import numpy as np
-from helpers import batch_iter
-from costs import compute_loss
+from helpers import *
+from costs import *
 
 def compute_stoch_gradient(y, tx, w):
     """Compute a stochastic gradient from just few examples n and their corresponding y_n labels."""
@@ -14,18 +14,23 @@ def compute_stoch_gradient(y, tx, w):
 
 
 def least_squares_SGD(
-        y, tx, initial_w, batch_size, max_iters, gamma):
+        y, tx, initial_w, max_iters, gamma):
     """Stochastic gradient descent algorithm."""
-    ws = [initial_w]
-    losses = []
+    batch_size = 1
     w = initial_w
+
+    all_y = y
+    all_tx = tx
+
+    count = 0
 
     for batch in batch_iter(y, tx, batch_size, max_iters):
         y, tx = batch
         gradient = compute_stoch_gradient(y, tx, w)
-        loss = compute_loss(y, tx, w)
         w =  w - gamma * gradient
 
-        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(bi=1, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+        print("SGD ({bi}/{ti}): loss={l}".format(
+              bi=count, ti=max_iters - 1, l=compute_loss(all_y, all_tx, w)) + "\t\t" + str(get_accuracy(all_tx, all_y, w)))
+        count += 1
 
-    return w, loss
+    return w, compute_loss(all_y, all_tx, w)
