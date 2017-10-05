@@ -46,7 +46,7 @@ def create_csv_submission(ids, y_pred, name):
         writer.writeheader()
         for r1, r2 in zip(ids, y_pred):
             writer.writerow({'Id':int(r1),'Prediction':int(r2)})
-            
+
 
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
@@ -72,3 +72,13 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         end_index = min((batch_num + 1) * batch_size, data_size)
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
+
+
+def get_accuracy(x, y, w):
+    pred_y = predict_labels(w, x)
+    correct_count = 0
+    for index, yi in enumerate(y):
+        pred_yi = pred_y[index]
+        if pred_yi == yi:
+            correct_count += 1
+    return correct_count/len(y)

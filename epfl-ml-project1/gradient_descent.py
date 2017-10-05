@@ -2,6 +2,7 @@
 """Gradient Descent"""
 import numpy as np
 from costs import *
+from helpers import *
 
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
@@ -12,7 +13,7 @@ def compute_gradient(y, tx, w):
     return gradient
 
 
-def least_squares(y, tx, initial_w, max_iters, gamma):
+def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
     # Define parameters to store w and loss
     ws = [initial_w]
@@ -24,7 +25,7 @@ def least_squares(y, tx, initial_w, max_iters, gamma):
         loss = compute_loss(y, tx, w)
         w =  w - gamma * gradient
 
-        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+        print("Gradient Descent({bi}/{ti}): loss={l}".format(
+              bi=n_iter, ti=max_iters - 1, l=loss) + "\t\t" + str(get_accuracy(tx, y, w)))
 
     return w, loss

@@ -7,7 +7,5 @@ def compute_loss(y, tx, w):
 
     You can calculate the loss using mse or mae.
     """
-    N = tx.shape[0]
-    loss = 1/(2*N) * np.sum((y - np.dot(tx, w.T)) **2)
-
+    loss = 1/2 * np.mean((y - tx.dot(w)) **2)
     return loss
