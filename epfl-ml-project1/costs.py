@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Function used to compute the loss."""
+import numpy as np
 
 def compute_loss(y, tx, w):
     """Calculate the loss.
@@ -8,6 +9,5 @@ def compute_loss(y, tx, w):
     """
     N = tx.shape[0]
     loss = 1/(2*N) * np.sum((y - np.dot(tx, w.T)) **2)
-    
+
     return loss
-    
