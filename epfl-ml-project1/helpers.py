@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """some helper functions for project 1."""
 import csv
+
 import numpy as np
 
 
@@ -13,7 +14,7 @@ def load_csv_data(data_path, sub_sample=False):
 
     # convert class labels from strings to binary (-1,1)
     yb = np.ones(len(y))
-    yb[np.where(y=='b')] = -1
+    yb[np.where(y == 'b')] = -1
 
     # sub-sample
     if sub_sample:
@@ -45,7 +46,7 @@ def create_csv_submission(ids, y_pred, name):
         writer = csv.DictWriter(csvfile, delimiter=",", fieldnames=fieldnames)
         writer.writeheader()
         for r1, r2 in zip(ids, y_pred):
-            writer.writerow({'Id':int(r1),'Prediction':int(r2)})
+            writer.writerow({'Id': int(r1), 'Prediction': int(r2)})
 
 
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
@@ -81,4 +82,4 @@ def get_accuracy(x, y, w):
         pred_yi = pred_y[index]
         if pred_yi == yi:
             correct_count += 1
-    return correct_count/len(y)
+    return correct_count / len(y)
