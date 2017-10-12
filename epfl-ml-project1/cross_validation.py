@@ -6,7 +6,7 @@ def separate_set(x, y):
     np.random.shuffle(x_and_y)
 
     count = x_and_y.shape[0]
-    last_train_index = int(count * 0.90)
+    last_train_index = int(count * 0.80)
 
     train_set = x_and_y[0:last_train_index, :]
     test_set = x_and_y[last_train_index:, :]
