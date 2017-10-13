@@ -25,28 +25,28 @@ def group_by_jet_num(x, y, ids):
 
     # ---- 3 list
 
-    for jet_num in range(0, 3):
-        jet_num_x_dict_[jet_num] = []
-        jet_num_y_dict_[jet_num] = []
-        jet_num_ids_dict_[jet_num] = []
-
-    for row_index, row in enumerate(x):
-        jet_num = row[jet_num_column_index]
-        if jet_num >= 2:
-            jet_num = 2
-
-        jet_num_x_dict_[jet_num].append(row)
-        jet_num_y_dict_[jet_num].append(y[row_index])
-        jet_num_ids_dict_[jet_num].append(ids[row_index])
-
-    for jet_num in jet_num_x_dict_:
-        jet_num_x_dict_[jet_num] = np.array(jet_num_x_dict_[jet_num])
-        jet_num_y_dict_[jet_num] = np.array(jet_num_y_dict_[jet_num])
-        jet_num_ids_dict_[jet_num] = np.array(jet_num_ids_dict_[jet_num])
-
-        print(jet_num, jet_num_x_dict_[jet_num].shape, jet_num_y_dict_[jet_num].shape, jet_num_ids_dict_[jet_num].shape)
-
-    return jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_
+    # for jet_num in range(0, 3):
+    #     jet_num_x_dict_[jet_num] = []
+    #     jet_num_y_dict_[jet_num] = []
+    #     jet_num_ids_dict_[jet_num] = []
+    #
+    # for row_index, row in enumerate(x):
+    #     jet_num = row[jet_num_column_index]
+    #     if jet_num >= 2:
+    #         jet_num = 2
+    #
+    #     jet_num_x_dict_[jet_num].append(row)
+    #     jet_num_y_dict_[jet_num].append(y[row_index])
+    #     jet_num_ids_dict_[jet_num].append(ids[row_index])
+    #
+    # for jet_num in jet_num_x_dict_:
+    #     jet_num_x_dict_[jet_num] = np.array(jet_num_x_dict_[jet_num])
+    #     jet_num_y_dict_[jet_num] = np.array(jet_num_y_dict_[jet_num])
+    #     jet_num_ids_dict_[jet_num] = np.array(jet_num_ids_dict_[jet_num])
+    #
+    #     print(jet_num, jet_num_x_dict_[jet_num].shape, jet_num_y_dict_[jet_num].shape, jet_num_ids_dict_[jet_num].shape)
+    #
+    # return jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_
 
     # ----
 
