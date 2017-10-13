@@ -93,19 +93,19 @@ def remove_same_value_col(type_of_x_dict):
 
 def group_by_NaN_column(x, y, ids):
     # ---- Cancel the group by
-    type_of_x_dict_ = dict()
-    type_of_y_dict_ = dict()
-    type_of_ids_dict_ = dict()
-
-    x, y, ids = remove_NaN(x, y, ids)
-
-    type_of_x_dict_["tuple_str"] = x
-    type_of_y_dict_["tuple_str"] = y
-    type_of_ids_dict_["tuple_str"] = ids
-
-    type_of_x_dict_ = remove_same_value_col(type_of_x_dict_)
-
-    return type_of_x_dict_, type_of_y_dict_, type_of_ids_dict_
+    # type_of_x_dict_ = dict()
+    # type_of_y_dict_ = dict()
+    # type_of_ids_dict_ = dict()
+    #
+    # x, y, ids = remove_NaN(x, y, ids)
+    #
+    # type_of_x_dict_["tuple_str"] = x
+    # type_of_y_dict_["tuple_str"] = y
+    # type_of_ids_dict_["tuple_str"] = ids
+    #
+    # type_of_x_dict_ = remove_same_value_col(type_of_x_dict_)
+    #
+    # return type_of_x_dict_, type_of_y_dict_, type_of_ids_dict_
     # ----
 
     type_of_x_dict_ = dict()
