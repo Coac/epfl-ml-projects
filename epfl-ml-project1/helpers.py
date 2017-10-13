@@ -25,11 +25,11 @@ def load_csv_data(data_path, sub_sample=False):
     return yb, input_data, ids
 
 
-def predict_labels(weights, data):
+def predict_labels(weights, data, predict_threshold=0):
     """Generates class predictions given weights, and a test data matrix"""
     y_pred = np.dot(data, weights)
-    y_pred[np.where(y_pred <= -0.0)] = -1
-    y_pred[np.where(y_pred > -0.0)] = 1
+    y_pred[np.where(y_pred <= predict_threshold)] = -1
+    y_pred[np.where(y_pred > predict_threshold)] = 1
 
     return y_pred
 
@@ -75,8 +75,8 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
 
-def get_accuracy(x, y, w):
-    pred_y = predict_labels(w, x)
+def get_accuracy(x, y, w, predict_threshold=0):
+    pred_y = predict_labels(w, x, predict_threshold)
     correct_count = 0
     for index, yi in enumerate(y):
         pred_yi = pred_y[index]
