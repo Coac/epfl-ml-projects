@@ -21,6 +21,7 @@ def grid_search(y, tx, w0, w1):
     """Algorithm for grid search."""
     losses = np.zeros((len(w0), len(w1)))
 
+    # Find the weight in each spot of the grid
     for i, w0_i in enumerate(w0):
         for j, w1_i in enumerate(w1):
             w = np.array([w0_i, w1_i])

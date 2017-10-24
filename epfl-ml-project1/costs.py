@@ -4,9 +4,10 @@ import numpy as np
 
 
 def compute_loss(y, tx, w):
-    """Calculate the loss.
+    """
+    Calculate the loss.
 
-    You can calculate the loss using mse or mae.
+    You can calculate the loss using mse.
     """
     loss = 1 / 2 * np.mean((y - tx.dot(w)) ** 2)
     return loss

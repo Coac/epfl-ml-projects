@@ -6,6 +6,9 @@ jet_num_column_index = 22
 
 
 def group_by_jet_num(x, y, ids):
+    """Group the data by the categorical feature PRI_jet_num"""
+    
+    # Create dicts
     jet_num_x_dict_ = dict()
     jet_num_y_dict_ = dict()
     jet_num_ids_dict_ = dict()
@@ -53,18 +56,24 @@ def group_by_jet_num(x, y, ids):
 
 
 
+    # Crete an empty list for each category
     for jet_num in range(0, 4):
         jet_num_x_dict_[jet_num] = []
         jet_num_y_dict_[jet_num] = []
         jet_num_ids_dict_[jet_num] = []
 
+    
     for row_index, row in enumerate(x):
+        # Get the value of PRI_jet_num in the sample
         jet_num = row[jet_num_column_index]
+        # Add the values of the row to the according dict depending on the value
+        # of PRI_jet_num for each sample
         jet_num_x_dict_[jet_num].append(row)
         jet_num_y_dict_[jet_num].append(y[row_index])
         jet_num_ids_dict_[jet_num].append(ids[row_index])
 
     for jet_num in jet_num_x_dict_:
+        # Change to numpy array format
         jet_num_x_dict_[jet_num] = np.array(jet_num_x_dict_[jet_num])
         jet_num_y_dict_[jet_num] = np.array(jet_num_y_dict_[jet_num])
         jet_num_ids_dict_[jet_num] = np.array(jet_num_ids_dict_[jet_num])
@@ -77,7 +86,13 @@ def group_by_jet_num(x, y, ids):
 # Remove column with same value (0 values last)
 # TODO : move to pre_processing.py
 def remove_same_value_col(type_of_x_dict):
+    """
+    Remove the columns that for the subset have always de same value
+    (Feature that adds no value)
+    """
+    
     print("\tRemove col : ")
+    # Check if the column always have the same value, if true, remove it
     for NaN_col_str in type_of_x_dict:
         x = type_of_x_dict[NaN_col_str]
         col_to_remove = []
@@ -108,16 +123,20 @@ def group_by_NaN_column(x, y, ids):
     # return type_of_x_dict_, type_of_y_dict_, type_of_ids_dict_
     # ----
 
+    # Create dict
     type_of_x_dict_ = dict()
     type_of_y_dict_ = dict()
     type_of_ids_dict_ = dict()
 
+    
     for row_index, row in enumerate(x):
+        # If a feature contains a nan value, get its column index
         columns_with_NaN = []
         for col_index, feature in enumerate(row):
             if feature == -999:
                 columns_with_NaN.append(col_index)
 
+        # Change to string format the indeces of columns that contain nan
         tuple_str = str(tuple(columns_with_NaN))
         if tuple_str in type_of_x_dict_:
             type_of_x_dict_[tuple_str].append(row)
@@ -148,6 +167,7 @@ def group_by_NaN_column(x, y, ids):
 
 
 def group_by_jetnum_NaN(x, y, ids):
+    
     jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_ = group_by_jet_num(x, y, ids)
     for jet_num_key in jet_num_x_dict_:
         x = jet_num_x_dict_[jet_num_key]
