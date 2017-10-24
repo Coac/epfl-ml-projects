@@ -12,7 +12,7 @@ def build_polynomial(x, max_degree):
     polynomial_x = np.concatenate((polynomial_x, np.log(np.abs(x))), axis=1)
     # Create new features with the square root of the original data
     polynomial_x = np.concatenate((polynomial_x, np.sqrt(np.abs(x))), axis=1)
-    
+
     # Create polynomials of max_degree of the new data
     for degree in range(2, max_degree + 1):
         polynomial_x = np.concatenate((polynomial_x, np.power(x, degree)), axis=1)

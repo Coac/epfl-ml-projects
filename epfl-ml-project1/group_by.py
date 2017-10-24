@@ -1,13 +1,11 @@
 import numpy as np
 
-from pre_processing import remove_NaN
-
 jet_num_column_index = 22
 
 
 def group_by_jet_num(x, y, ids):
     """Group the data by the categorical feature PRI_jet_num"""
-    
+
     # Create dicts
     jet_num_x_dict_ = dict()
     jet_num_y_dict_ = dict()
@@ -62,7 +60,6 @@ def group_by_jet_num(x, y, ids):
         jet_num_y_dict_[jet_num] = []
         jet_num_ids_dict_[jet_num] = []
 
-    
     for row_index, row in enumerate(x):
         # Get the value of PRI_jet_num in the sample
         jet_num = row[jet_num_column_index]
@@ -90,7 +87,7 @@ def remove_same_value_col(type_of_x_dict):
     Remove the columns that for the subset have always de same value
     (Feature that adds no value)
     """
-    
+
     print("\tRemove col : ")
     # Check if the column always have the same value, if true, remove it
     for NaN_col_str in type_of_x_dict:
@@ -128,7 +125,6 @@ def group_by_NaN_column(x, y, ids):
     type_of_y_dict_ = dict()
     type_of_ids_dict_ = dict()
 
-    
     for row_index, row in enumerate(x):
         # If a feature contains a nan value, get its column index
         columns_with_NaN = []
@@ -152,11 +148,12 @@ def group_by_NaN_column(x, y, ids):
         type_of_y_dict_[type_of_rows] = np.array(type_of_y_dict_[type_of_rows])
         type_of_ids_dict_[type_of_rows] = np.array(type_of_ids_dict_[type_of_rows])
         type_of_y_dict_[type_of_rows] = type_of_y_dict_[type_of_rows].reshape(type_of_y_dict_[type_of_rows].shape[0], 1)
-        type_of_ids_dict_[type_of_rows] = type_of_ids_dict_[type_of_rows].reshape(type_of_ids_dict_[type_of_rows].shape[0],
-                                                                                1)
+        type_of_ids_dict_[type_of_rows] = type_of_ids_dict_[type_of_rows].reshape(
+            type_of_ids_dict_[type_of_rows].shape[0],
+            1)
 
         type_of_x_dict_[type_of_rows] = np.delete(type_of_x_dict_[type_of_rows], [col for col in eval(type_of_rows)],
-                                                 axis=1)
+                                                  axis=1)
 
         print(type_of_rows, type_of_x_dict_[type_of_rows].shape, type_of_y_dict_[type_of_rows].shape,
               type_of_ids_dict_[type_of_rows].shape)
@@ -167,7 +164,6 @@ def group_by_NaN_column(x, y, ids):
 
 
 def group_by_jetnum_NaN(x, y, ids):
-    
     jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_ = group_by_jet_num(x, y, ids)
     for jet_num_key in jet_num_x_dict_:
         x = jet_num_x_dict_[jet_num_key]

@@ -6,7 +6,7 @@ def remove_NaN(x, y, ids, delete_columns=True, delete_rows=False):
     # Initialize vectos where the columns and rows with Nan will be stored
     columns_with_NaN = set("")
     rows_with_NaN = set("")
-    
+
     # If a sample is a NaN, add its column number and row number to the vector
     for row_index, row in enumerate(x):
         for col_index, feature in enumerate(row):

@@ -29,21 +29,21 @@ def separate_set(x, y):
 
 def build_k_indices(y, k_fold, seed=1):
     """build k indices for k-fold."""
-    
+
     # Get the number of rows of the data
     num_row = y.shape[0]
     # Get the number of rows for each interval depending on k
     interval = int(num_row / k_fold)
-    
+
     np.random.seed(seed)
-    
+
     # Shuffle the indeces of the data
     indices = np.random.permutation(num_row)
-    
+
     # Get an array of the indeces that will go in each k interval
     k_indices = [indices[k * interval: (k + 1) * interval]
                  for k in range(k_fold)]
-    
+
     return np.array(k_indices)
 
 
