@@ -149,13 +149,13 @@ def compute_stoch_gradient(y, tx, w):
 
 
 # Logistic Regression
-def logistic_regression_gradient_descent_demo(y, tx, initial_w, max_iters, gamma):
+def logistic_regression(y, tx, initial_w, max_iters, gamma):
     # init parameters
     threshold = 1e-8
     losses = []
 
     # build tx
-    tx = np.c_[np.ones((y.shape[0], 1)), x]
+    tx = np.c_[np.ones((y.shape[0], 1)), tx]
     w = initial_w
 
     # start the logistic regression
@@ -174,7 +174,53 @@ def logistic_regression_gradient_descent_demo(y, tx, initial_w, max_iters, gamma
 
 
 # Regularized Logistic Regression
-"""
+def reg_logistic_regression(y, x, lambda_, initial_w, max_iters, gamma):
+    # init parameters
+    losses = []
+
+    # build tx
+    tx = np.c_[np.ones((y.shape[0], 1)), x]
+    w = initial_w
+
+    # start the logistic regression
+    for iter in range(max_iters):
+        # get loss and update w.
+        loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+        # log info
+        if iter % 100 == 0:
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # converge criterion
+        losses.append(loss)
+
+    print("loss={l}".format(l=calculate_loss(y, tx, w)))
+
+    return w, loss
 
 
-"""
+def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
+    """
+    Do one step of gradient descent, using the penalized logistic regression.
+    Return the loss and updated w.
+    """
+    loss, gradient, hessian = penalized_logistic_regression(y, tx, w, lambda_)
+    w = w - (np.linalg.inv(hessian)).dot(gradient)
+
+    return loss, w
+
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss, gradient, and hessian."""
+    loss = calculate_loss(y, tx, w) + lambda_ * np.sum(np.abs(w ** 2))
+
+    gradient = (sigmoid(tx.dot(w)) - y).T.dot(tx).sum(axis=0) + lambda_ * 2 * np.sum(np.abs(w))
+    gradient = np.reshape(gradient, (len(gradient), 1))
+    hessian = calculate_hessian(y, tx, w)
+
+    return loss, gradient, hessian
+
+
+def calculate_hessian(y, tx, w):
+    """return the hessian of the loss function."""
+    S = np.diag((sigmoid(tx.dot(w)) * (1 - sigmoid(tx.dot(w)))).reshape(-1))
+    H = tx.T.dot(S).dot(tx)
+    return H
