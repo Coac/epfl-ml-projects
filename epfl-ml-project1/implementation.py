@@ -3,8 +3,65 @@ implementation.py
 
 It includes all the functions to implement
 """
-from costs import *
 from helpers import *
+
+
+def compute_loss(y, tx, w):
+    """
+    Calculate the loss.
+
+    You can calculate the loss using mse.
+    """
+    loss = 1 / 2 * np.mean((y - tx.dot(w)) ** 2)
+    return loss
+
+
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+    # Get number of samples
+    N = tx.shape[0]
+    # Calculate the error
+    e = y - np.dot(tx, w)
+    # Calculate the gradient
+    gradient = - (1 / N) * np.dot(tx.T, e)
+
+    return gradient
+
+
+def least_squares_GD(y, tx, initial_w, max_iters, gamma):
+    """Gradient descent algorithm."""
+    # Define parameters to store w and loss
+    w = initial_w
+
+    # Calculate gradient, loss and weights for a number of iterations
+    for n_iter in range(max_iters):
+        gradient = compute_gradient(y, tx, w)
+        loss = compute_loss(y, tx, w)
+        w = w - gamma * gradient
+
+        print("Gradient Descent({bi}/{ti}): loss={l}".format(
+            bi=n_iter, ti=max_iters - 1, l=loss) + "\t\t" + str(get_accuracy(tx, y, w)))
+
+    return w, loss
+
+
+def least_squares(y, tx):
+    """Calculate optimal weights by least squares"""
+    gram = tx.T.dot(tx)
+    print("Rank: " + str(np.linalg.matrix_rank(gram)))
+    w = np.linalg.inv(gram).dot(tx.T).dot(y)
+
+    return w, compute_loss(y, tx, w)
+
+
+def ridge_regression(y, tx, lambda_):
+    """Calculate optimal weights by ridge regression"""
+    gram = tx.T.dot(tx)
+    lambda_prime = 2 * len(y) * lambda_
+    I = np.identity(len(gram))
+    w = np.linalg.inv(gram + np.dot(lambda_prime, I)).dot(tx.T).dot(y)
+
+    return w, compute_loss(y, tx, w)
 
 
 # Least Squares (SGD)
@@ -58,7 +115,7 @@ def calculate_logistic_loss(y, tx, w):
     """compute the cost by negative log likelihood."""
     # loss = np.sum(np.log(1 + np.exp(tx.dot(w))) - np.multiply(y, (tx.dot(w))))
     sig = sigmoid(tx.dot(w))
-    loss = - y.T.dot(np.log(sig)) + (1-y).T.dot(np.log(1-sig))
+    loss = - y.T.dot(np.log(sig)) + (1 - y).T.dot(np.log(1 - sig))
     return loss[0][0]
 
 

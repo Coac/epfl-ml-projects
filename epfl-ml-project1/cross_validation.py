@@ -1,4 +1,4 @@
-from gradient_descent import *
+from implementation import *
 
 
 def separate_set(x, y):

@@ -1,6 +1,7 @@
 import math
 import time
 
+
 def euclidean_distance(x1, x2):
     distance = 0
     for col in range(len(x1)):
