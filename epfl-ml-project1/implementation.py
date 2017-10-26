@@ -153,8 +153,6 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     # init parameters
     losses = []
 
-    # build tx
-    tx = np.c_[np.ones((y.shape[0], 1)), tx]
     w = initial_w
 
     # start the logistic regression
@@ -175,8 +173,7 @@ def reg_logistic_regression(y, x, lambda_, initial_w, max_iters, gamma):
     # init parameters
     losses = []
 
-    # build tx
-    tx = np.c_[np.ones((y.shape[0], 1)), x]
+    tx = x
     w = initial_w
 
     # start the logistic regression
