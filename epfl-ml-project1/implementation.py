@@ -151,7 +151,6 @@ def compute_stoch_gradient(y, tx, w):
 # Logistic Regression
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
     # init parameters
-    threshold = 1e-8
     losses = []
 
     # build tx
@@ -167,8 +166,6 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
             print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
         # converge criterion
         losses.append(loss)
-        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
-            break
 
         return w, loss
 
