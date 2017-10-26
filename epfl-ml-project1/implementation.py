@@ -107,16 +107,18 @@ def least_squares_SGD(
 # Logistic Regression
 def sigmoid(t):
     """apply sigmoid function on t."""
-
     return np.exp(t) / (1 + np.exp(t))
 
 
 def calculate_logistic_loss(y, tx, w):
     """compute the cost by negative log likelihood."""
-    # loss = np.sum(np.log(1 + np.exp(tx.dot(w))) - np.multiply(y, (tx.dot(w))))
-    sig = sigmoid(tx.dot(w))
-    loss = - y.T.dot(np.log(sig)) + (1 - y).T.dot(np.log(1 - sig))
-    return loss[0][0]
+    h = tx.dot(w)
+    return (np.sum(np.log(1 + np.exp(h))) - y.T.dot(h))[0][0]
+
+
+    # sig = sigmoid(tx.dot(w))
+    # loss = - y.T.dot(np.log(sig)) + (1 - y).T.dot(np.log(1 - sig))
+    # return loss
 
 
 def calculate_logistic_gradient(y, tx, w):
@@ -124,17 +126,30 @@ def calculate_logistic_gradient(y, tx, w):
     return tx.T.dot(sigmoid(tx.dot(w)) - y)
 
 
-def learning_by_gradient_descent(y, tx, w, gamma):
-    """
-    Do one step of gradient descen using logistic regression.
-    Return the loss and the updated w.
-    """
+def calculate_hessian(y, tx, w):
+    """return the hessian of the loss function."""
+    S = np.diag((sigmoid(tx.dot(w)) * (1 - sigmoid(tx.dot(w)))).reshape(-1))
+    H = tx.T.dot(S).dot(tx)
+    return H
+
+
+def calculate_newton(y, tx, w):
     loss = calculate_logistic_loss(y, tx, w)
 
     gradient = calculate_logistic_gradient(y, tx, w)
 
-    w = w - gamma * gradient
+    hessian = calculate_hessian(y, tx, w)
 
+    return loss, gradient, hessian
+
+
+def learning_by_newton_method(y, tx, w, gamma):
+    """
+    Do one step of gradient descen using logistic regression.
+    Return the loss and the updated w.
+    """
+    loss, gradient, hessian = calculate_newton(y, tx, w)
+    w = w - gamma * (np.linalg.inv(hessian)).dot(gradient)
     return loss, w
 
 
@@ -144,7 +159,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     # start the logistic regression
     for iter in range(max_iters):
         # get loss and update w.
-        loss, w = learning_by_gradient_descent(y, tx, w, gamma)
+        loss, w = learning_by_newton_method(y, tx, w, gamma)
         # log info
         if iter % 100 == 0:
             print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
@@ -176,24 +191,17 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     Return the loss and updated w.
     """
     loss, gradient, hessian = penalized_logistic_regression(y, tx, w, lambda_)
-    w = w - (np.linalg.inv(hessian)).dot(gradient)
+    w = w - gamma * (np.linalg.inv(hessian)).dot(gradient)
 
     return loss, w
 
 
 def penalized_logistic_regression(y, tx, w, lambda_):
     """return the loss, gradient, and hessian."""
-    loss = calculate_logistic_loss(y, tx, w) + lambda_ * np.sum(np.abs(w ** 2))
+    loss = calculate_logistic_loss(y, tx, w) + lambda_ * np.sum(w ** 2) / (len(tx) * 2)
 
-    gradient = (sigmoid(tx.dot(w)) - y).T.dot(tx).sum(axis=0) + lambda_ * 2 * np.sum(np.abs(w))
+    gradient = (sigmoid(tx.dot(w)) - y).T.dot(tx).sum(axis=0)/len(tx) + lambda_ * np.sum(w) / len(tx)
     gradient = np.reshape(gradient, (len(gradient), 1))
-    hessian = calculate_hessian(y, tx, w)
+    hessian = calculate_hessian(y, tx, w) + lambda_ / len(tx)
 
     return loss, gradient, hessian
-
-
-def calculate_hessian(y, tx, w):
-    """return the hessian of the loss function."""
-    S = np.diag((sigmoid(tx.dot(w)) * (1 - sigmoid(tx.dot(w)))).reshape(-1))
-    H = tx.T.dot(S).dot(tx)
-    return H
