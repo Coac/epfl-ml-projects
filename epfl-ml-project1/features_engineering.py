@@ -38,7 +38,7 @@ def build_combinations(x):
 
 
 def build_combinations_lvl(x, lvl, number_of_element):
-    # Get column indeces of the number of elements to combine and in how many combinations
+    # Get column indices of the number of elements to combine and in how many combinations
     columns_index = np.array(range(0, number_of_element))
     combinations = list(it.combinations(np.unique(columns_index), lvl))
 

@@ -14,50 +14,7 @@ def group_by_jet_num(x, y, ids):
     jet_num_y_dict_ = dict()
     jet_num_ids_dict_ = dict()
 
-    # ---- Cancel the group by
-    # length = int(len(x)/2)
-    # jet_num_x_dict_[0] = x[length:]
-    # jet_num_y_dict_[0] = y[length:]
-    # jet_num_ids_dict_[0] = ids[length:]
-    # jet_num_x_dict_[1] = x[:length]
-    # jet_num_y_dict_[1] = y[:length]
-    # jet_num_ids_dict_[1] = ids[:length]
-    #
-    # return jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_
-    # ----
-
-
-    # ---- 3 list
-
-    # for jet_num in range(0, 3):
-    #     jet_num_x_dict_[jet_num] = []
-    #     jet_num_y_dict_[jet_num] = []
-    #     jet_num_ids_dict_[jet_num] = []
-    #
-    # for row_index, row in enumerate(x):
-    #     jet_num = row[jet_num_column_index]
-    #     if jet_num >= 2:
-    #         jet_num = 2
-    #
-    #     jet_num_x_dict_[jet_num].append(row)
-    #     jet_num_y_dict_[jet_num].append(y[row_index])
-    #     jet_num_ids_dict_[jet_num].append(ids[row_index])
-    #
-    # for jet_num in jet_num_x_dict_:
-    #     jet_num_x_dict_[jet_num] = np.array(jet_num_x_dict_[jet_num])
-    #     jet_num_y_dict_[jet_num] = np.array(jet_num_y_dict_[jet_num])
-    #     jet_num_ids_dict_[jet_num] = np.array(jet_num_ids_dict_[jet_num])
-    #
-    #     print(jet_num, jet_num_x_dict_[jet_num].shape, jet_num_y_dict_[jet_num].shape, jet_num_ids_dict_[jet_num].shape)
-    #
-    # return jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_
-
-    # ----
-
-
-
-
-    # Crete an empty list for each category
+    # Create an empty list for each category
     for jet_num in range(0, 4):
         jet_num_x_dict_[jet_num] = []
         jet_num_y_dict_[jet_num] = []
@@ -109,21 +66,6 @@ def group_by_NaN_column(x, y, ids):
     Group the data by the same column containing NaN values.
     @:return a Dictionary
     """
-    # ---- Cancel the group by
-    # type_of_x_dict_ = dict()
-    # type_of_y_dict_ = dict()
-    # type_of_ids_dict_ = dict()
-    #
-    # x, y, ids = remove_NaN(x, y, ids)
-    #
-    # type_of_x_dict_["tuple_str"] = x
-    # type_of_y_dict_["tuple_str"] = y
-    # type_of_ids_dict_["tuple_str"] = ids
-    #
-    # type_of_x_dict_ = remove_same_value_col(type_of_x_dict_)
-    #
-    # return type_of_x_dict_, type_of_y_dict_, type_of_ids_dict_
-    # ----
 
     # Create dict
     type_of_x_dict_ = dict()
