@@ -9,7 +9,7 @@ def compute_gradient(y, tx, w):
     # Get number of samples
     N = tx.shape[0]
     # Calculate the error
-    e = y - np.dot(tx, w.T)
+    e = y - np.dot(tx, w)
     # Calculate the gradient
     gradient = - (1 / N) * np.dot(tx.T, e)
 
