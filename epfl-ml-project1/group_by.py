@@ -4,7 +4,10 @@ jet_num_column_index = 22
 
 
 def group_by_jet_num(x, y, ids):
-    """Group the data by the categorical feature PRI_jet_num"""
+    """
+    Group the data by the categorical feature PRI_jet_num
+    @:return a Dictionary
+    """
 
     # Create dicts
     jet_num_x_dict_ = dict()
@@ -80,8 +83,6 @@ def group_by_jet_num(x, y, ids):
     return jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_
 
 
-# Remove column with same value (0 values last)
-# TODO : move to pre_processing.py
 def remove_same_value_col(type_of_x_dict):
     """
     Remove the columns that for the subset have always de same value
@@ -104,6 +105,10 @@ def remove_same_value_col(type_of_x_dict):
 
 
 def group_by_NaN_column(x, y, ids):
+    """
+    Group the data by the same column containing NaN values.
+    @:return a Dictionary
+    """
     # ---- Cancel the group by
     # type_of_x_dict_ = dict()
     # type_of_y_dict_ = dict()
