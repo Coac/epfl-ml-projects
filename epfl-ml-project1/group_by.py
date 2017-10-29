@@ -9,6 +9,9 @@ def group_by_jet_num(x, y, ids):
     @:return a Dictionary
     """
 
+    print('Group by JetNum')
+    print('num_jet | shape')
+
     # Create dicts
     jet_num_x_dict_ = dict()
     jet_num_y_dict_ = dict()
@@ -35,7 +38,7 @@ def group_by_jet_num(x, y, ids):
         jet_num_y_dict_[jet_num] = np.array(jet_num_y_dict_[jet_num])
         jet_num_ids_dict_[jet_num] = np.array(jet_num_ids_dict_[jet_num])
 
-        print(jet_num, jet_num_x_dict_[jet_num].shape, jet_num_y_dict_[jet_num].shape, jet_num_ids_dict_[jet_num].shape)
+        print(jet_num, '\t|', jet_num_x_dict_[jet_num].shape)
 
     return jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_
 
@@ -46,14 +49,14 @@ def remove_same_value_col(type_of_x_dict):
     (Feature that adds no value)
     """
 
-    print("\tRemove col : ")
+    # print("\tRemove col : ")
     # Check if the column always have the same value, if true, remove it
     for NaN_col_str in type_of_x_dict:
         x = type_of_x_dict[NaN_col_str]
         col_to_remove = []
         for col in range(0, x.shape[1]):
             if np.unique(x[:, col]).size == 1:
-                print('\t', NaN_col_str, col, x[:, col])
+                # print('\t', NaN_col_str, col, x[:, col])
                 col_to_remove.append(col)
 
         type_of_x_dict[NaN_col_str] = np.delete(x, col_to_remove, axis=1)
@@ -90,6 +93,7 @@ def group_by_NaN_column(x, y, ids):
             type_of_y_dict_[tuple_str] = [y[row_index]]
             type_of_ids_dict_[tuple_str] = [ids[row_index]]
 
+    print('\tRemoved NaN column indices', '|', 'Shape')
     for type_of_rows in type_of_x_dict_:
         type_of_x_dict_[type_of_rows] = np.array(type_of_x_dict_[type_of_rows])
         type_of_y_dict_[type_of_rows] = np.array(type_of_y_dict_[type_of_rows])
@@ -102,8 +106,7 @@ def group_by_NaN_column(x, y, ids):
         type_of_x_dict_[type_of_rows] = np.delete(type_of_x_dict_[type_of_rows], [col for col in eval(type_of_rows)],
                                                   axis=1)
 
-        print(type_of_rows, type_of_x_dict_[type_of_rows].shape, type_of_y_dict_[type_of_rows].shape,
-              type_of_ids_dict_[type_of_rows].shape)
+        print('\t', type_of_rows, '|', type_of_x_dict_[type_of_rows].shape)
 
     type_of_x_dict_ = remove_same_value_col(type_of_x_dict_)
 
@@ -112,6 +115,7 @@ def group_by_NaN_column(x, y, ids):
 
 def group_by_jetnum_NaN(x, y, ids):
     jet_num_x_dict_, jet_num_y_dict_, jet_num_ids_dict_ = group_by_jet_num(x, y, ids)
+    print('')
     for jet_num_key in jet_num_x_dict_:
         x = jet_num_x_dict_[jet_num_key]
         y = jet_num_y_dict_[jet_num_key]
