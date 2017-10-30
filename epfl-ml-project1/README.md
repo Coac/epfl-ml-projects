@@ -4,16 +4,17 @@ The aim of this project is to develop and test a machine learning model meant to
 The dataset contains several features that describe collision events. From that data we predict whether each event originated a Higgs Boson.
 This project takes the form of a [Kaggle competition](https://www.kaggle.com/c/epfml-higgs/) based on the Higgs Boson Machine Learning Challenge (2014).
 
-You can have a look to our Jupyter notebook ``project.ipynb`` to see how we achieve the classification task.
+You can have a look at our Jupyter notebook ``project.ipynb`` to see how we achieve the classification task.
 
 There is also a report describing precisely our methods.
 
 ## Usage
-To generate the submission file you should first add a ``test.csv`` in the ``datas/`` folder
-Then run this command and the ``submission.csv`` file will be generated in the ``datas/`` folder
+To generate the submission file you should first add a ``test.csv`` file in the ``datas/`` folder and then run
 ```
 python run.py
 ```
+The ``submission.csv`` file will be generated in the same ``datas/`` folder
+
 
 You can run the implemented methods test via
 ```
