@@ -77,8 +77,7 @@ def compute_stoch_gradient(y, tx, w):
     return gradient
 
 
-def least_squares_SGD(
-        y, tx, initial_w, max_iters, gamma):
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     """Stochastic gradient descent algorithm."""
     # Initialzie the batch size and weights
     batch_size = 1
@@ -90,17 +89,18 @@ def least_squares_SGD(
     count = 0
 
     # For each batch calculate its gradient and new weigths
-    for batch in batch_iter(y, tx, batch_size, max_iters):
-        y, tx = batch
-        gradient = compute_stoch_gradient(y, tx, w)
-        w = w - gamma * gradient
+    for i in range(max_iters):
+        for batch in batch_iter(all_y, all_tx, batch_size, 1):
+            y_batch, x_batch = batch
+            gradient = compute_stoch_gradient(y_batch, x_batch, w)
+            w = w - gamma * gradient
 
-        print("SGD ({bi}/{ti}): loss={l}".format(
-            bi=count, ti=max_iters - 1, l=compute_loss(all_y, all_tx, w)) + "\t\t" + str(
-            get_accuracy(all_tx, all_y, w)))
-        count += 1
+            print("SGD ({bi}/{ti}): loss={l}".format(
+                bi=count, ti=max_iters - 1, l=compute_loss(all_y, all_tx, w)) + "\t\t" + str(
+                get_accuracy(all_tx, all_y, w)))
+            count += 1
 
-        # Return the weights and loss
+    # Return the weights and loss
     return w, compute_loss(all_y, all_tx, w)
 
 
@@ -195,11 +195,12 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     """return the loss, gradient, and hessian."""
     loss = calculate_logistic_loss(y, tx, w) + lambda_ * np.sum(w ** 2) / (len(tx) * 2)
 
-    gradient = (sigmoid(tx.dot(w)) - y).T.dot(tx).sum(axis=0)/len(tx) + lambda_ * np.sum(w) / len(tx)
+    gradient = (sigmoid(tx.dot(w)) - y).T.dot(tx).sum(axis=0) / len(tx) + lambda_ * np.sum(w) / len(tx)
     gradient = np.reshape(gradient, (len(gradient), 1))
     hessian = calculate_hessian(y, tx, w) + lambda_ / len(tx)
 
     return loss, gradient, hessian
+
 
 # Test the methods
 if __name__ == '__main__':
@@ -213,9 +214,9 @@ if __name__ == '__main__':
 
     w, loss2 = reg_logistic_regression(y, x, 0.1, initial_w, 1000, 0.9)
 
-    w, loss3 = least_squares_GD(y, x, initial_w, 1000, 0.2)
+    w, loss3 = least_squares_GD(y, x, initial_w, 2000, 0.25)
 
-    w, loss4 = least_squares_SGD(y, x, initial_w, 100, 0.01)
+    w, loss4 = least_squares_SGD(y, x, initial_w, 3000, 0.02)
 
     w, loss5 = least_squares(y, x)
 
@@ -227,4 +228,3 @@ if __name__ == '__main__':
     print("least_squares_SGD :", loss4)
     print("least_squares :", loss5)
     print("ridge_regression :", loss6)
-
