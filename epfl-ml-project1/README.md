@@ -14,6 +14,11 @@ To generate the submission file in the ``datas/`` folder
 python run.py
 ```
 
+You can run the implemented methods test via
+```
+python implementations.py
+```
+
 ## Project structure
 
 ### cross_validation.py
