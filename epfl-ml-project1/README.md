@@ -8,6 +8,12 @@ You can have a look to our Jupyter notebook [project.ipynb](https://github.com/C
 
 There is also a report describing precisely our methods.
 
+## Usage
+To generate the submission file in the ``datas/`` folder
+```
+python run.py
+```
+
 ## Project structure
 
 ### cross_validation.py
