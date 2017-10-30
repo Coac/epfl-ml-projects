@@ -116,11 +116,6 @@ def calculate_logistic_loss(y, tx, w):
     return (np.sum(np.log(1 + np.exp(h))) - y.T.dot(h))[0][0]
 
 
-    # sig = sigmoid(tx.dot(w))
-    # loss = - y.T.dot(np.log(sig)) + (1 - y).T.dot(np.log(1 - sig))
-    # return loss
-
-
 def calculate_logistic_gradient(y, tx, w):
     """compute the gradient of loss."""
     return tx.T.dot(sigmoid(tx.dot(w)) - y)
@@ -205,3 +200,31 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     hessian = calculate_hessian(y, tx, w) + lambda_ / len(tx)
 
     return loss, gradient, hessian
+
+# Test the methods
+if __name__ == '__main__':
+    np.random.seed(1)
+
+    x = np.random.rand(100, 30)
+    y = np.random.rand(x.shape[0], 1)
+    initial_w = np.random.rand(x.shape[1], 1)
+
+    w, loss1 = logistic_regression(y, x, initial_w, 1000, 0.01)
+
+    w, loss2 = reg_logistic_regression(y, x, 0.1, initial_w, 1000, 0.9)
+
+    w, loss3 = least_squares_GD(y, x, initial_w, 1000, 0.2)
+
+    w, loss4 = least_squares_SGD(y, x, initial_w, 100, 0.01)
+
+    w, loss5 = least_squares(y, x)
+
+    w, loss6 = ridge_regression(y, x, 0.5)
+
+    print("logistic_regression :", loss1)
+    print("reg_logistic_regression :", loss2)
+    print("least_squares_GD :", loss3)
+    print("least_squares_SGD :", loss4)
+    print("least_squares :", loss5)
+    print("ridge_regression :", loss6)
+
