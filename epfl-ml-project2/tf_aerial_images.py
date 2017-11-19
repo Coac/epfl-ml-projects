@@ -16,12 +16,12 @@ from PIL import Image
 NUM_CHANNELS = 3  # RGB images
 PIXEL_DEPTH = 255
 NUM_LABELS = 2
-TRAINING_SIZE = 20
-VALIDATION_SIZE = 5  # Size of the validation set.
+TRAINING_SIZE = 100
+TEST_SET_SIZE = 50
 SEED = 66478  # Set to None for random seed.
 BATCH_SIZE = 16  # 64
-NUM_EPOCHS = 50
-RESTORE_MODEL = False  # If True, restore existing model instead of training a new one
+NUM_EPOCHS = 0
+RESTORE_MODEL = True  # If True, restore existing model instead of training a new one
 RECORDING_STEP = 1000
 
 # Set image patch size in pixels
@@ -72,6 +72,7 @@ def extract_data(filename, num_images):
     N_PATCHES_PER_IMAGE = (IMG_WIDTH / IMG_PATCH_SIZE) * (IMG_HEIGHT / IMG_PATCH_SIZE)
 
     img_patches = [img_crop(imgs[i], IMG_PATCH_SIZE, IMG_PATCH_SIZE) for i in range(num_images)]
+
     data = [img_patches[i][j] for i in range(len(img_patches)) for j in range(len(img_patches[i]))]
 
     return numpy.asarray(data)
@@ -143,9 +144,9 @@ def label_to_img(imgwidth, imgheight, w, h, labels):
     for i in range(0, imgheight, h):
         for j in range(0, imgwidth, w):
             if labels[idx][0] > 0.5:
-                l = 1
-            else:
                 l = 0
+            else:
+                l = 1
             array_labels[j:j + w, i:i + h] = l
             idx = idx + 1
     return array_labels
@@ -171,7 +172,7 @@ def concatenate_images(img, gt_img):
         gt_img_3c[:, :, 2] = gt_img8
         img8 = img_float_to_uint8(img)
         cimg = numpy.concatenate((img8, gt_img_3c), axis=1)
-    return cimg
+    return gt_img_3c
 
 
 def make_img_overlay(img, predicted_img):
@@ -214,10 +215,10 @@ def main(argv=None):  # pylint: disable=unused-argument
     idx1 = [i for i, j in enumerate(train_labels) if j[1] == 1]
     new_indices = idx0[0:min_c] + idx1[0:min_c]
     print(len(new_indices))
-    print(train_data.shape)
+    print("Before balancing train data shape:", train_data.shape)
     train_data = train_data[new_indices, :, :, :]
     train_labels = train_labels[new_indices]
-
+    print("After balancing train data shape:", train_data.shape)
     train_size = train_labels.shape[0]
 
     c0 = 0
@@ -308,6 +309,19 @@ def main(argv=None):  # pylint: disable=unused-argument
         cimg = concatenate_images(img, img_prediction)
 
         return cimg
+
+    def get_prediction_images(image_filename):
+        img = mpimg.imread(image_filename)
+        img_prediction = get_prediction(img)
+
+        w = img_prediction.shape[0]
+        h = img_prediction.shape[1]
+        gt_img_3c = numpy.zeros((w, h, 3), dtype=numpy.uint8)
+        gt_img8 = img_float_to_uint8(img_prediction)
+        gt_img_3c[:, :, 0] = gt_img8
+        gt_img_3c[:, :, 1] = gt_img8
+        gt_img_3c[:, :, 2] = gt_img8
+        return gt_img8
 
     # Get prediction overlaid on the original image for given input file
     def get_prediction_with_overlay(filename, image_idx):
@@ -445,66 +459,66 @@ def main(argv=None):  # pylint: disable=unused-argument
             # Restore variables from disk.
             saver.restore(s, FLAGS.train_dir + "/model.ckpt")
             print("Model restored.")
-
         else:
             # Run all the initializers to prepare the trainable parameters.
             tf.global_variables_initializer().run()
 
-            # Build the summary operation based on the TF collection of Summaries.
-            summary_op = tf.summary.merge_all()
-            summary_writer = tf.summary.FileWriter(FLAGS.train_dir,
-                                                   graph_def=s.graph_def)
-            print('Initialized!')
-            # Loop through training steps.
-            print('Total number of iterations = ' + str(int(num_epochs * train_size / BATCH_SIZE)))
+        # Build the summary operation based on the TF collection of Summaries.
+        summary_op = tf.summary.merge_all()
+        summary_writer = tf.summary.FileWriter(FLAGS.train_dir,
+                                               graph_def=s.graph_def)
+        print('Initialized!')
+        # Loop through training steps.
+        print('Total number of iterations = ' + str(int(num_epochs * train_size / BATCH_SIZE)))
 
-            training_indices = range(train_size)
+        training_indices = range(train_size)
 
-            for iepoch in range(num_epochs):
+        for iepoch in range(num_epochs):
 
-                # Permute training indices
-                perm_indices = numpy.random.permutation(training_indices)
+            # Permute training indices
+            perm_indices = numpy.random.permutation(training_indices)
 
-                for step in range(int(train_size / BATCH_SIZE)):
+            print('EPOCH ', iepoch, '/', num_epochs)
 
-                    offset = (step * BATCH_SIZE) % (train_size - BATCH_SIZE)
-                    batch_indices = perm_indices[offset:(offset + BATCH_SIZE)]
+            for step in range(int(train_size / BATCH_SIZE)):
+                offset = (step * BATCH_SIZE) % (train_size - BATCH_SIZE)
+                batch_indices = perm_indices[offset:(offset + BATCH_SIZE)]
 
-                    # Compute the offset of the current minibatch in the data.
-                    # Note that we could use better randomization across epochs.
-                    batch_data = train_data[batch_indices, :, :, :]
-                    batch_labels = train_labels[batch_indices]
-                    # This dictionary maps the batch data (as a numpy array) to the
-                    # node in the graph is should be fed to.
-                    feed_dict = {train_data_node: batch_data,
-                                 train_labels_node: batch_labels}
+                # Compute the offset of the current minibatch in the data.
+                # Note that we could use better randomization across epochs.
+                batch_data = train_data[batch_indices, :, :, :]
+                batch_labels = train_labels[batch_indices]
+                # This dictionary maps the batch data (as a numpy array) to the
+                # node in the graph is should be fed to.
+                feed_dict = {train_data_node: batch_data,
+                             train_labels_node: batch_labels}
 
-                    if step % RECORDING_STEP == 0:
+                if step % RECORDING_STEP == 0:
 
-                        summary_str, _, l, lr, predictions = s.run(
-                            [summary_op, optimizer, loss, learning_rate, train_prediction],
-                            feed_dict=feed_dict)
-                        # summary_str = s.run(summary_op, feed_dict=feed_dict)
-                        summary_writer.add_summary(summary_str, step)
-                        summary_writer.flush()
+                    summary_str, _, l, lr, predictions = s.run(
+                        [summary_op, optimizer, loss, learning_rate, train_prediction],
+                        feed_dict=feed_dict)
+                    # summary_str = s.run(summary_op, feed_dict=feed_dict)
+                    summary_writer.add_summary(summary_str, step)
+                    summary_writer.flush()
 
-                        # print_predictions(predictions, batch_labels)
+                    # print_predictions(predictions, batch_labels)
 
-                        print('Epoch %.2f' % (float(step) * BATCH_SIZE / train_size))
-                        print('Minibatch loss: %.3f, learning rate: %.6f' % (l, lr))
-                        print('Minibatch error: %.1f%%' % error_rate(predictions,
-                                                                     batch_labels))
+                    print('Epoch %.2f' % (float(step) * BATCH_SIZE / train_size))
+                    print('Minibatch loss: %.3f, learning rate: %.6f' % (l, lr))
+                    print('Minibatch error: %.1f%%' % error_rate(predictions,
+                                                                 batch_labels))
 
-                        sys.stdout.flush()
-                    else:
-                        # Run the graph and fetch some of the nodes.
-                        _, l, lr, predictions = s.run(
-                            [optimizer, loss, learning_rate, train_prediction],
-                            feed_dict=feed_dict)
+                    sys.stdout.flush()
+                else:
+                    # Run the graph and fetch some of the nodes.
+                    _, l, lr, predictions = s.run(
+                        [optimizer, loss, learning_rate, train_prediction],
+                        feed_dict=feed_dict)
 
-                # Save the variables to disk.
-                save_path = saver.save(s, FLAGS.train_dir + "/model.ckpt")
-                print("Model saved in file: %s" % save_path)
+            # Save the variables to disk.
+            save_path = saver.save(s, FLAGS.train_dir + "/model.ckpt")
+            print("Model saved in file: %s" % save_path)
 
         print("Running prediction on training set")
         prediction_training_dir = "predictions_training/"
@@ -515,6 +529,14 @@ def main(argv=None):  # pylint: disable=unused-argument
             Image.fromarray(pimg).save(prediction_training_dir + "prediction_" + str(i) + ".png")
             oimg = get_prediction_with_overlay(train_data_filename, i)
             oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")
+
+        print("Running prediction on test set")
+        prediction_test_dir = "predictions_test/"
+        if not os.path.isdir(prediction_test_dir):
+            os.mkdir(prediction_test_dir)
+        for i in range(1, TEST_SET_SIZE + 1):
+            pimg = get_prediction_images('datas/test_set_images/test_' + str(i) + '/test_' + str(i) + '.png')
+            Image.fromarray(pimg).save(prediction_test_dir + "prediction_" + str(i) + ".png")
 
 
 if __name__ == '__main__':
