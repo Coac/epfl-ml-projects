@@ -186,13 +186,26 @@ def display_prediction_and_gt(model, X, Y, image_size, patch_size, image_index):
         plot of predicted and real grountruth image
     
     '''
-    patch_count_per_image = int((image_size / 16) ** 2) 
+    patch_count_per_image = int((image_size / 16) ** 2)
     fig1 = plt.figure(figsize=(10, 10))
     plt.subplot(1, 2, 1)
-    predictions = model.predict_classes(X[image_index * patch_count_per_image: (image_index+1) * patch_count_per_image])
-    img = label_to_img(image_size, image_size, patch_size, patch_size, predictions)
-    plt.imshow(img, cmap='Greys_r');
+    predictions = model.predict_classes(
+        X[image_index * patch_count_per_image: (image_index + 1) * patch_count_per_image])
+    pred_img = label_to_img(image_size, image_size, patch_size, patch_size, predictions)
+    plt.imshow(pred_img, cmap='Greys_r');
     plt.subplot(1, 2, 2)
-    img = label_to_img(image_size, image_size, patch_size, patch_size, Y[image_index * patch_count_per_image: (image_index+1) * patch_count_per_image])
-    plt.imshow(img, cmap='Greys_r');
+    gt_image = label_to_img(image_size, image_size, patch_size, patch_size,
+                            Y[image_index * patch_count_per_image: (image_index + 1) * patch_count_per_image])
+    plt.imshow(gt_image, cmap='Greys_r');
+
+    return pred_img, gt_image
+
+
+def categorical_probas_to_classes(p):
+    return np.argmax(p, axis=1)
+
+def probas_to_classes(y_pred):
+    if len(y_pred.shape) > 1 and y_pred.shape[1] > 1:
+        return categorical_probas_to_classes(y_pred)
+    return np.array([1 if p > 0.5 else 0 for p in y_pred])
 
