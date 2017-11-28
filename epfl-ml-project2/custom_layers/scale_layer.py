@@ -1,10 +1,12 @@
-from keras.layers.core import Layer
-from keras.engine import InputSpec
 from keras import backend as K
+from keras.engine import InputSpec
+from keras.layers.core import Layer
+
 try:
     from keras import initializations
 except ImportError:
     from keras import initializers as initializations
+
 
 class Scale(Layer):
     '''Learns a set of weights and biases used for scaling the input data.
@@ -34,7 +36,8 @@ class Scale(Layer):
             Theano/TensorFlow function to use for weights initialization.
             This parameter is only relevant if you don't pass a `weights` argument.
     '''
-    def __init__(self, weights=None, axis=-1, momentum = 0.9, beta_init='zero', gamma_init='one', **kwargs):
+
+    def __init__(self, weights=None, axis=-1, momentum=0.9, beta_init='zero', gamma_init='one', **kwargs):
         self.momentum = momentum
         self.axis = axis
         self.beta_init = initializations.get(beta_init)
@@ -49,8 +52,8 @@ class Scale(Layer):
         # Compatibility with TensorFlow >= 1.0.0
         self.gamma = K.variable(self.gamma_init(shape), name='{}_gamma'.format(self.name))
         self.beta = K.variable(self.beta_init(shape), name='{}_beta'.format(self.name))
-        #self.gamma = self.gamma_init(shape, name='{}_gamma'.format(self.name))
-        #self.beta = self.beta_init(shape, name='{}_beta'.format(self.name))
+        # self.gamma = self.gamma_init(shape, name='{}_gamma'.format(self.name))
+        # self.beta = self.beta_init(shape, name='{}_beta'.format(self.name))
         self.trainable_weights = [self.gamma, self.beta]
 
         if self.initial_weights is not None:
