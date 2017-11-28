@@ -16,6 +16,22 @@ def load_image(infilename):
     data = mpimg.imread(infilename)
     return data
 
+def load_image_pil(infilename, bw=False):
+    ''' Read an image from a directory
+    INPUTS: 
+        infilename: Name of the image (include directory)
+        bw = Boolean (1 color image, 0 black and white)
+    OUTPUT: 
+        data = image file (float 32)
+    '''
+    img = Image.open(infilename)
+    if bw:
+        img = img.convert('L')
+    
+    img = np.array(img)
+    
+    return img
+
 def img_float_to_uint8(img):
     '''Change image from float to uint8 0-255
     INPUTS: 
