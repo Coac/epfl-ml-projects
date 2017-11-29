@@ -194,7 +194,8 @@ def display_prediction_and_gt(model, X, Y, image_size, patch_size, image_index):
         plot of predicted and real grountruth image
     
     """
-    patch_count_per_image = int((image_size / 16) ** 2)
+    patch_count_per_image = int((image_size / patch_size) ** 2)
+    print(patch_count_per_image)
     plt.figure(figsize=(10, 10))
     plt.subplot(1, 2, 1)
     predictions = model.predict_classes(
