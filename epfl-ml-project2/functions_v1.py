@@ -180,7 +180,7 @@ def save_labels_to_images(imgwidth, imgheight, w, h, labels):
         im.save(prediction_test_dir + "prediction_" + str(i + 1) + ".png")
 
 
-def display_prediction_and_gt(model, X, Y, image_size, patch_size, image_index):
+def display_prediction_and_gt(model, X, Y, image_size, patch_size, image_index, display=True):
     """Displays the image of the prediction and the test groundtruth next to each
         other to compare visually
     INPUTS: 
@@ -195,17 +195,21 @@ def display_prediction_and_gt(model, X, Y, image_size, patch_size, image_index):
     
     """
     patch_count_per_image = int((image_size / patch_size) ** 2)
-    print(patch_count_per_image)
-    plt.figure(figsize=(10, 10))
-    plt.subplot(1, 2, 1)
+
     predictions = model.predict_classes(
         X[image_index * patch_count_per_image: (image_index + 1) * patch_count_per_image])
+
     pred_img = label_to_img(image_size, image_size, patch_size, patch_size, predictions)
-    plt.imshow(pred_img, cmap='Greys_r');
-    plt.subplot(1, 2, 2)
+
     gt_image = label_to_img(image_size, image_size, patch_size, patch_size,
                             Y[image_index * patch_count_per_image: (image_index + 1) * patch_count_per_image])
-    plt.imshow(gt_image, cmap='Greys_r');
+
+    if display:
+        plt.figure(figsize=(10, 10))
+        plt.subplot(1, 2, 1)
+        plt.imshow(pred_img, cmap='Greys_r');
+        plt.subplot(1, 2, 2)
+        plt.imshow(gt_image, cmap='Greys_r');
 
     return pred_img, gt_image
 
