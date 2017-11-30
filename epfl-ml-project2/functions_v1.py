@@ -201,15 +201,19 @@ def display_prediction_and_gt(model, X, Y, image_size, patch_size, image_index, 
 
     pred_img = label_to_img(image_size, image_size, patch_size, patch_size, predictions)
 
-    gt_image = label_to_img(image_size, image_size, patch_size, patch_size,
+    if Y is not None:
+        gt_image = label_to_img(image_size, image_size, patch_size, patch_size,
                             Y[image_index * patch_count_per_image: (image_index + 1) * patch_count_per_image])
+    else:
+        gt_image = None
 
     if display:
         plt.figure(figsize=(10, 10))
         plt.subplot(1, 2, 1)
         plt.imshow(pred_img, cmap='Greys_r');
-        plt.subplot(1, 2, 2)
-        plt.imshow(gt_image, cmap='Greys_r');
+        if Y is not None:
+            plt.subplot(1, 2, 2)
+            plt.imshow(gt_image, cmap='Greys_r');
 
     return pred_img, gt_image
 
