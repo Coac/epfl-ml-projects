@@ -203,7 +203,7 @@ def display_prediction_and_gt(model, X, Y, image_size, patch_size, image_index, 
 
     if Y is not None:
         gt_image = label_to_img(image_size, image_size, patch_size, patch_size,
-                            Y[image_index * patch_count_per_image: (image_index + 1) * patch_count_per_image])
+                                Y[image_index * patch_count_per_image: (image_index + 1) * patch_count_per_image])
     else:
         gt_image = None
 
@@ -346,7 +346,8 @@ def zca_whitening_test(images, h, w, n_batch, ZCA_mat, bw=False):
 
     # 0 center the image
     images = images - images.mean(axis=0)
-    # Global Contrast Normalization, which is quite often applied to image data. I'll use the L2 norm, which makes every image have vector magnitude 1:
+    # Global Contrast Normalization, which is quite often applied to image data. I'll use the L2 norm, which makes
+    # every image have vector magnitude 1:
     images = images / np.sqrt((images ** 2).sum(axis=1))[:, None]
 
     zca_ims = []
