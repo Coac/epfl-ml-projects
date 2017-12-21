@@ -17,7 +17,7 @@ pip install scikit-image
 ```
 
 ## Datas
-You need to include the dataset as follow :
+You need to include the dataset as follows:
 ```
 datas
 -- test_set_images
@@ -41,12 +41,21 @@ datas
 
 
 ```
+***ATTENTION:*** **Please notice the leading zeros in the folders inside `test_set_images`**. It is `test_01` and not `test_1`.
 
 ## Run.py
 This script runs the predictions on the test set images and create the submission file for Kaggle.
 ```
 python run.py
 ```
+
+## Time
+
+### Predictions
+Generating the submission file should take less than 2 minutes.
+
+#### Training
+The training took approximately 3 hours running on a Nvidia Tesla K80 GPU.
 
 ## Notebook.ipynb
 - CNN and Denoiser.ipynb
