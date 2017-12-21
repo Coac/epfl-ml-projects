@@ -226,3 +226,157 @@ def probas_to_classes(y_pred):
     if len(y_pred.shape) > 1 and y_pred.shape[1] > 1:
         return categorical_probas_to_classes(y_pred)
     return np.array([1 if p > 0.5 else 0 for p in y_pred])
+
+
+def show_ZCA(im, h, w, bw=False):
+    if bw:
+        im = im.reshape((h, w, 1))
+    else:
+        im = im.reshape((h, w, 3))
+    m, M = im.min(), im.max()
+    plt.imshow((im - m) / (M - m))
+    plt.show()
+
+
+def zca_whitening(images, h, w, n_batch, bw=False):
+    """
+    Function to compute ZCA whitening matrix .
+    INPUT:  
+        images: [M x N] matrix.
+            Rows: Variables
+            Columns: Observations
+        h: height of images
+        w: width of image
+        n_batch: Number of batches
+        bw: black and white image
+    OUTPUT: 
+        ZCAMatrix: [M x M] matrix
+        flat_zca: vector of whitened images
+    """
+    # Get a batch size
+    batch = int(len(images) / n_batch)
+
+    # Convert the list into a numpy array
+    images = np.array(images)
+
+    # Flatten image
+    if bw:
+        images = images.reshape((-1, h * w))
+    else:
+        images = images.reshape((-1, h * w * 3))
+
+    print(images.shape)
+
+    # 0 center the image
+    images = images - images.mean(axis=0)
+    # Global Contrast Normalization, which is quite often applied to image data. I'll use the L2 norm, which makes every image have vector magnitude 1:
+    images = images / np.sqrt((images ** 2).sum(axis=1))[:, None]
+
+    ZCA_matrix = []
+    for i in range(n_batch):
+        print("ZCA batch {i} out of {n_batch}".format(i=i + 1, n_batch=n_batch))
+        # Get a batch of the images
+        im_batch = images[batch * i:(i + 1) * batch]
+
+        # Covariance matrix
+        sigma = np.cov(im_batch, rowvar=True)
+        #         print(sigma.shape)
+        # Singular Value Decomposition
+        U, S, V = np.linalg.svd(sigma)
+        # Whitening constant, it prevents division by zero
+        epsilon = 1e-5
+        # ZCA Whitening matrix
+        ZCAMatrix = np.dot(U, np.dot(np.diag(1.0 / np.sqrt(S + epsilon)), U.T))
+        #         print(ZCAMatrix.shape)
+
+        # Create a list of the ZCA Matrices
+        ZCA_matrix.append(ZCAMatrix)
+
+    # Calculate an average of all the ZCA matrices
+    ZCAMatrix = np.mean(np.array(ZCA_matrix), axis=0)
+    print("\nZCA Matrix shape = {shape}".format(shape=ZCAMatrix.shape))
+
+    zca_ims = []
+    for i in range(n_batch):
+        # Get a batch of the images
+        im_batch = images[batch * i:(i + 1) * batch]
+
+        # Data whitening
+        zca = np.dot(ZCAMatrix, im_batch)
+
+        # Turn into values between 0 and 1
+        m, M = zca.min(axis=0), zca.max(axis=0)
+        zca = (zca - m) / (M - m)
+
+        # Return the image to its shape
+        if bw:
+            zca = zca.reshape((-1, h, w, 1))
+        else:
+            zca = zca.reshape((-1, h, w, 3))
+
+        zca_ims.append(zca)
+
+    # Unlist the small lists to make a unique list of the whitened images
+    flat_zca = [item for sublist in zca_ims for item in sublist]
+
+    return ZCAMatrix, flat_zca
+
+
+def zca_whitening_test(images, h, w, n_batch, ZCA_mat, bw=False):
+    """
+    Function to compute ZCA whitening matrix .
+    INPUT:  X: [M x N] matrix.
+        Rows: Variables
+        Columns: Observations
+    OUTPUT: ZCAMatrix: [M x M] matrix
+    """
+    # Get a batch size
+    batch = int(len(images) / n_batch)
+
+    # Convert the list into a numpy array
+    images = np.array(images)
+
+    # Flatten image
+    if bw:
+        images = images.reshape((-1, h * w))
+    else:
+        images = images.reshape((-1, h * w * 3))
+
+    print(images.shape)
+
+    # 0 center the image
+    images = images - images.mean(axis=0)
+    # Global Contrast Normalization, which is quite often applied to image data. I'll use the L2 norm, which makes every image have vector magnitude 1:
+    images = images / np.sqrt((images ** 2).sum(axis=1))[:, None]
+
+    zca_ims = []
+    for i in range(n_batch):
+        if i == n_batch - 1:
+            # Get a batch of the images
+            im_batch = images[batch * i:]
+
+            # Data whitening
+            zca = np.dot(ZCAMatrix[0:im_batch.shape[0], 0:im_batch.shape[0]], im_batch)
+        else:
+            # Get a batch of the images
+            im_batch = images[batch * i:(i + 1) * batch]
+
+            # Data whitening
+            zca = np.dot(ZCAMatrix, im_batch)
+
+            # Turn into values between 0 and 1
+        m, M = zca.min(axis=0), zca.max(axis=0)
+        zca = (zca - m) / (M - m)
+
+        # Return the image to its shape
+        if bw:
+            zca = zca.reshape((-1, h, w, 1))
+        else:
+            zca = zca.reshape((-1, h, w, 3))
+
+        zca_ims.append(zca)
+
+    # Unlist the small lists to make a unique list of the whitened images
+    flat_zca = [item for sublist in zca_ims for item in sublist]
+
+    return np.array(flat_zca)
