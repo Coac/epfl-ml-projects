@@ -23,7 +23,12 @@ python run.py
 ```
 
 ## Notebook.ipynb
-Talk about notebooks
+- CNN and Denoiser.ipynb
+- Segnet Autoencoder.ipynb
+- Sharr filtering.ipynb
+- ZCA whitening.ipynb
+- Fine tuning.ipynb
+- Preprocessing.ipynb
 
 ## functions_v1.py
 Contains all the functions used to run the code
